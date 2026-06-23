@@ -1,7 +1,8 @@
 import { DataTypes } from 'sequelize';
+import { sequelize } from '../config/db.js';
 
-export default (sequelize) => {
-  return sequelize.define('User', {
+
+export const User = sequelize.define('User', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -31,13 +32,9 @@ export default (sequelize) => {
       type: DataTypes.ENUM('ADMIN', 'USER', 'STORE_OWNER'),
       allowNull: false,
     },
-    storeId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      unique: true,
-    }
+
   }, {
     tableName: 'user',
     timestamps: true
-  });
-};
+  }
+);

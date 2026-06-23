@@ -1,23 +1,12 @@
-import { Sequelize } from 'sequelize';
+import { sequelize } from '../config/db.js';
+import { User } from './User.js';
+import { Store } from './Store.js';
+import { Rating } from './Rating.js';
 import bcrypt from 'bcryptjs';
 
-import defineUser from './User.js';
-import defineStore from './Store.js';
-import defineRating from './Rating.js';
-
-const dbUrl = process.env.DATABASE_URL || 'mysql://root:GovindGuddu%402004@127.0.0.1:3306/store_rating';
-
-export const sequelize = new Sequelize(dbUrl, {
-  dialect: 'mysql',
-  logging: false,
-});
-
-export const User = defineUser(sequelize);
-export const Store = defineStore(sequelize);
-export const Rating = defineRating(sequelize);
-
-Store.hasOne(User, { foreignKey: 'storeId', as: 'owner', onDelete: 'CASCADE' });
-User.belongsTo(Store, { foreignKey: 'storeId', as: 'store' });
+// Setup Associations
+User.hasMany(Store, { foreignKey: 'ownerId', as: 'stores', onDelete: 'CASCADE' });
+Store.belongsTo(User, { foreignKey: 'ownerId', as: 'owner' });
 
 User.hasMany(Rating, { foreignKey: 'userId', as: 'ratings', onDelete: 'CASCADE' });
 Rating.belongsTo(User, { foreignKey: 'userId', as: 'user' });
@@ -40,3 +29,23 @@ export async function seedDatabase() {
     console.log('Default administrator created (admin@example.com / Password123!).');
   }
 }
+
+export const initializeDB = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("DATABASE CONNECTED");
+    await sequelize.sync({ alter: true });
+    console.log("Database Synchronized");
+    await seedDatabase();
+  } catch (error) {
+    console.log("Database Connection failed,", error);
+  }
+};
+
+const db = {
+  User,
+  Store,
+  Rating,
+};
+
+export default db;

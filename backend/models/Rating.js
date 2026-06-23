@@ -1,7 +1,8 @@
 import { DataTypes } from 'sequelize';
+import { sequelize } from '../config/db.js';
 
-export default (sequelize) => {
-  return sequelize.define('Rating', {
+
+export const Rating = sequelize.define('Rating', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -29,5 +30,4 @@ export default (sequelize) => {
         fields: ['userId', 'storeId']
       }
     ]
-  });
-};
+});

@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
+import { sequelize } from '../config/db.js';
 
-export default (sequelize) => {
-  return sequelize.define('Store', {
+export const Store = sequelize.define('Store', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -22,9 +22,14 @@ export default (sequelize) => {
       type: DataTypes.STRING(400),
       allowNull: false,
       validate: { len: [0, 400] }
+    },
+    ownerId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     }
   }, {
     tableName: 'store',
     timestamps: true
-  });
-};
+  }
+);
+
