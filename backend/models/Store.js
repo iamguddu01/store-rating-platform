@@ -1,0 +1,30 @@
+import { DataTypes } from 'sequelize';
+
+export default (sequelize) => {
+  return sequelize.define('Store', {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: { len: [20, 60] }
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: { isEmail: true }
+    },
+    address: {
+      type: DataTypes.STRING(400),
+      allowNull: false,
+      validate: { len: [0, 400] }
+    }
+  }, {
+    tableName: 'store',
+    timestamps: true
+  });
+};
