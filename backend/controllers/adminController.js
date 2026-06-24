@@ -104,7 +104,7 @@ export const listUsers = async (req, res) => {
 
     const whereClause = {
       role: {
-        [Op.in]: ['ADMIN', 'USER']
+        [Op.in]: ['ADMIN', 'USER', 'STORE_OWNER']
       }
     };
 
@@ -113,7 +113,7 @@ export const listUsers = async (req, res) => {
     if (address) whereClause.address = { [Op.like]: `%${address}%` };
     if (role) {
       const upperRole = role.toUpperCase();
-      if (['ADMIN', 'USER'].includes(upperRole)) {
+      if (['ADMIN', 'USER', 'STORE_OWNER'].includes(upperRole)) {
         whereClause.role = upperRole;
       }
     }

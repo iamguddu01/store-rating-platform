@@ -6,7 +6,6 @@ const router = express.Router();
 
 router.use(authenticate);
 router.use(requireRole('STORE_OWNER'));
-
 router.get('/dashboard', getStoreDashboard);
 
 export default router;

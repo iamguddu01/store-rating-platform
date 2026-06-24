@@ -1,6 +1,6 @@
 import { Op, literal } from 'sequelize';
 import db from "../models/index.js"
-const { Store, Rating } = db;
+const { Store, Rating, User } = db;
 
 export const listStores = async (req, res) => {
   try {
@@ -100,5 +100,59 @@ export const rateStore = async (req, res) => {
   } catch (error) {
     console.error('Submit rating error:', error);
     return res.status(500).json({ error: 'Server error submitting rating.' });
+  }
+};
+
+export const getStoreById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const store = await Store.findByPk(id, {
+      attributes: [
+        'id',
+        'name',
+        'address',
+        'email',
+        [
+          literal(`(
+            SELECT IFNULL(AVG(rating), 0)
+            FROM rating AS r
+            WHERE r.storeId = Store.id
+          )`),
+          'averageRating'
+        ],
+        [
+          literal(`(
+            SELECT rating
+            FROM rating AS r
+            WHERE r.storeId = Store.id AND r.userId = ${userId}
+            LIMIT 1
+          )`),
+          'userRating'
+        ]
+      ]
+    });
+
+    if (!store) {
+      return res.status(404).json({ error: 'Store not found.' });
+    }
+
+    const ratings = await Rating.findAll({
+      where: { storeId: id },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['name']
+        }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
+
+    return res.json({ store, ratings });
+  } catch (error) {
+    console.error('Get store by id error:', error);
+    return res.status(500).json({ error: 'Server error retrieving store details.' });
   }
 };
